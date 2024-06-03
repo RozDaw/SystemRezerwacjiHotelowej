@@ -1,0 +1,29 @@
+﻿@page "/reservations"
+@using Microsoft.AspNetCore.Components.QuickGrid
+@inject SystemRezerwacjiHotelowej.Data.ApplicationDbContext DB
+@using SystemRezerwacjiHotelowej.Components
+
+<PageTitle>Index</PageTitle>
+
+<h1>Index</h1>
+
+<p>
+    <a href="reservations/create">Create New</a>
+</p>
+
+<QuickGrid Class="table" Items="DB.Reservation">
+    <PropertyColumn Property="reservation => reservation.DataMeldunku" />
+    <PropertyColumn Property="reservation => reservation.DataWymeldowania" />
+    <PropertyColumn Property="reservation => reservation.CzyOplacona" />
+    <PropertyColumn Property="reservation => reservation.CzyZameldowany" />
+    <PropertyColumn Property="reservation => reservation.Parking" />
+    <PropertyColumn Property="reservation => reservation.Animator" />
+    <PropertyColumn Property="reservation => reservation.LiczbaOsob" />
+    <PropertyColumn Property="reservation => reservation.Cena" />
+
+    <TemplateColumn Context="reservation">
+        <a href="@($"reservations/edit?id={reservation.Id}")">Edit</a> |
+        <a href="@($"reservations/details?id={reservation.Id}")">Details</a> |
+        <a href="@($"reservations/delete?id={reservation.Id}")">Delete</a>
+    </TemplateColumn>
+</QuickGrid>

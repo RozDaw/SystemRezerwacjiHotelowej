@@ -1,0 +1,62 @@
+﻿@page "/"
+@inject NavigationManager NavigationManager
+
+@rendermode InteractiveServer
+
+@code {
+    private void NavigateToLogin()
+    {
+        NavigationManager.NavigateTo("Account/Login");
+    }
+}
+
+<style>
+    .hero {
+        background-image: url('/images/zdjecie.jpg');
+        background-size: cover;
+        background-position: center;
+        height: 90vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        color: white;
+        text-align: center;
+    }
+
+    .hero-title {
+        font-size: 4em;
+        margin-bottom: 0.5em;
+        font-family: 'Georgia', serif;
+    }
+
+    .hero-subtitle {
+        font-size: 1.5em;
+        margin-bottom: 1em;
+    }
+
+    .hero-button {
+        padding: 0.5em 1em;
+        font-size: 1.2em;
+        color: white;
+        background-color: rgba(0, 0, 0, 0.5);
+        border: none;
+        cursor: pointer;
+        border-radius: 5px;
+        transition: background-color 0.3s ease;
+    }
+
+        .hero-button:hover {
+            background-color: rgba(0, 0, 0, 0.8);
+        }
+</style>
+
+<div class="hero">
+    <div class="hero-content">
+        <h1 class="hero-title">Luksusowy Hotel w Barcelonie</h1>
+        <p class="hero-subtitle">Pięciogwiazdkowe doświadczenie jak żadne inne</p>
+
+        <button class="hero-button" @onclick="NavigateToLogin">Zarezerwuj teraz</button>
+
+    </div>
+</div>

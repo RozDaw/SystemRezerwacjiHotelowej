@@ -1,0 +1,174 @@
+﻿@page "/rooms"
+@inject SystemRezerwacjiHotelowej.Data.ApplicationDbContext DB
+@using Microsoft.AspNetCore.Components.Forms
+
+@rendermode InteractiveServer
+
+<PageTitle>Index</PageTitle>
+
+<h1>Index</h1>
+
+<p>
+    <a href="rooms/create">Create New</a>
+</p>
+
+<div class="container">
+    <div class="data-table">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Numer</th>
+                    <th>Pietro</th>
+                    <th>Ilosc Osob</th>
+                    <th>Cena Za Dobe</th>
+                    <th>Standard</th>
+                    <th>Akcje</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var room in FilteredRooms)
+                {
+                    <tr>
+                        <td>@room.Numer</td>
+                        <td>@room.Pietro</td>
+                        <td>@room.IloscOsob</td>
+                        <td>@room.CenaZaDobe</td>
+                        <td>@room.Standard</td>
+                        <td>
+                            <a href="@($"rooms/edit?id={room.Id}")">Edit</a> |
+                            <a href="@($"rooms/details?id={room.Id}")">Details</a> |
+                            <a href="@($"rooms/delete?id={room.Id}")">Delete</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <div class="search-area">
+        <h2>Filtruj pokoje</h2>
+        <div class="form-group">
+            <label>Numer:</label>
+            <InputText @bind-Value="filterNumer" @oninput="e => { filterNumer = e.Value.ToString(); FilterRooms(); }" class="form-control" />
+        </div>
+        <div class="form-group">
+            <label>Pietro:</label>
+            <InputText @bind-Value="filterPietro" @oninput="e => { filterPietro = e.Value.ToString(); FilterRooms(); }" class="form-control" />
+        </div>
+        <div class="form-group">
+            <label>Ilosc Osob:</label>
+            <InputText @bind-Value="filterIloscOsob" @oninput="e => { filterIloscOsob = e.Value.ToString(); FilterRooms(); }" class="form-control" />
+        </div>
+        <div class="form-group">
+            <label>Cena Za Dobe:</label>
+            <InputText @bind-Value="filterCenaZaDobe" @oninput="e => { filterCenaZaDobe = e.Value.ToString(); FilterRooms(); }" class="form-control" />
+        </div>
+        <div class="form-group">
+            <label>Standard:</label>
+            <InputText @bind-Value="filterStandard" @oninput="e => { filterStandard = e.Value.ToString(); FilterRooms(); }" class="form-control" />
+        </div>
+    </div>
+</div>
+
+<style>
+    .container {
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .data-table {
+        flex: 3;
+    }
+
+    .search-area {
+        flex: 1;
+        margin-left: 20px;
+    }
+
+    .form-group {
+        margin-bottom: 15px;
+    }
+
+        .form-group label {
+            display: block;
+        }
+
+    .form-control {
+        width: 100%;
+        padding: 8px;
+        font-size: 16px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+    }
+
+        .form-control:focus {
+            border-color: #007bff;
+            outline: 0;
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+        }
+</style>
+
+@code {
+    private string filterNumer = string.Empty;
+    private string filterPietro = string.Empty;
+    private string filterIloscOsob = string.Empty;
+    private string filterCenaZaDobe = string.Empty;
+    private string filterStandard = string.Empty;
+
+    private IQueryable<Room> _filteredRooms;
+    private IQueryable<Room> FilteredRooms
+    {
+        get => _filteredRooms;
+        set
+        {
+            _filteredRooms = value;
+            StateHasChanged();
+        }
+    }
+
+    protected override void OnInitialized()
+    {
+        FilteredRooms = DB.Room;
+    }
+
+    private void FilterRooms()
+    {
+        try
+        {
+            var query = DB.Room.AsQueryable();
+
+            if (!string.IsNullOrEmpty(filterNumer) && int.TryParse(filterNumer, out var numer))
+            {
+                query = query.Where(room => room.Numer == numer);
+            }
+
+            if (!string.IsNullOrEmpty(filterPietro) && int.TryParse(filterPietro, out var pietro))
+            {
+                query = query.Where(room => room.Pietro == pietro);
+            }
+
+            if (!string.IsNullOrEmpty(filterIloscOsob) && int.TryParse(filterIloscOsob, out var iloscOsob))
+            {
+                query = query.Where(room => room.IloscOsob == iloscOsob);
+            }
+
+            if (!string.IsNullOrEmpty(filterCenaZaDobe) && int.TryParse(filterCenaZaDobe, out var cenaZaDobe))
+            {
+                query = query.Where(room => room.CenaZaDobe == cenaZaDobe);
+            }
+
+            if (!string.IsNullOrEmpty(filterStandard))
+            {
+                var standardToLower = filterStandard.ToLower();
+                query = query.Where(room => room.Standard.ToLower().Contains(standardToLower));
+            }
+
+            FilteredRooms = query;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error filtering rooms: {ex.Message}");
+            FilteredRooms = Enumerable.Empty<Room>().AsQueryable();
+        }
+    }
+}

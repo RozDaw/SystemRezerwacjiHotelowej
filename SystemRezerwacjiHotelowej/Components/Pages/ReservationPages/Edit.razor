@@ -1,0 +1,121 @@
+﻿@page "/Reservations/edit"
+@inject SystemRezerwacjiHotelowej.Data.ApplicationDbContext DB
+@using SystemRezerwacjiHotelowej.Components
+@inject NavigationManager NavigationManager
+@using Microsoft.EntityFrameworkCore
+
+<PageTitle>Edit</PageTitle>
+
+<h1>Edit</h1>
+
+<h4>Reservation</h4>
+<hr />
+@if (Reservation is null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <div class="row">
+        <div class="col-md-4">
+            <EditForm method="post" Model="Reservation" OnValidSubmit="UpdateReservation" FormName="edit" Enhance>
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+                <input type="hidden" name="Reservation.Id" value="@Reservation.Id" />
+                <div class="mb-3">
+                    <label for="datameldunku" class="form-label">DataMeldunku:</label>
+                    <InputDate id="datameldunku" @bind-Value="Reservation.DataMeldunku" class="form-control" />
+                    <ValidationMessage For="() => Reservation.DataMeldunku" class="text-danger" />
+                </div>
+                <div class="mb-3">
+                    <label for="datawymeldowania" class="form-label">DataWymeldowania:</label>
+                    <InputDate id="datawymeldowania" @bind-Value="Reservation.DataWymeldowania" class="form-control" />
+                    <ValidationMessage For="() => Reservation.DataWymeldowania" class="text-danger" />
+                </div>
+                <div class="mb-3">
+                    <label for="czyoplacona" class="form-label">CzyOplacona:</label>
+                    <InputCheckbox id="czyoplacona" @bind-Value="Reservation.CzyOplacona" class="form-check-input" />
+                    <ValidationMessage For="() => Reservation.CzyOplacona" class="text-danger" />
+                </div>
+                <div class="mb-3">
+                    <label for="czyzameldowany" class="form-label">CzyZameldowany:</label>
+                    <InputCheckbox id="czyzameldowany" @bind-Value="Reservation.CzyZameldowany" class="form-check-input" />
+                    <ValidationMessage For="() => Reservation.CzyZameldowany" class="text-danger" />
+                </div>
+                <div class="mb-3">
+                    <label for="parking" class="form-label">Parking:</label>
+                    <InputCheckbox id="parking" @bind-Value="Reservation.Parking" class="form-check-input" />
+                    <ValidationMessage For="() => Reservation.Parking" class="text-danger" />
+                </div>
+                <div class="mb-3">
+                    <label for="animator" class="form-label">Animator:</label>
+                    <InputCheckbox id="animator" @bind-Value="Reservation.Animator" class="form-check-input" />
+                    <ValidationMessage For="() => Reservation.Animator" class="text-danger" />
+                </div>
+                <div class="mb-3">
+                    <label for="liczbaosob" class="form-label">LiczbaOsob:</label>
+                    <InputNumber id="liczbaosob" @bind-Value="Reservation.LiczbaOsob" class="form-control" />
+                    <ValidationMessage For="() => Reservation.LiczbaOsob" class="text-danger" />
+                </div>
+                <div class="mb-3">
+                    <label for="cena" class="form-label">Cena:</label>
+                    <InputNumber id="cena" @bind-Value="Reservation.Cena" class="form-control" />
+                    <ValidationMessage For="() => Reservation.Cena" class="text-danger" />
+                </div>
+                <button type="submit" class="btn btn-primary">Save</button>
+            </EditForm>
+        </div>
+    </div>
+}
+
+<div>
+    <a href="/reservations">Back to List</a>
+</div>
+
+@code {
+    [SupplyParameterFromQuery]
+    public int Id { get; set; }
+
+    [SupplyParameterFromForm]
+    public Reservation? Reservation { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Reservation ??= await DB.Reservation.FirstOrDefaultAsync(m => m.Id == Id);
+
+        if (Reservation is null)
+        {
+            NavigationManager.NavigateTo("notfound");
+        }
+    }
+
+    // To protect from overposting attacks, enable the specific properties you want to bind to.
+    // For more details, see https://aka.ms/RazorPagesCRUD.
+    public async Task UpdateReservation()
+    {
+        DB.Attach(Reservation!).State = EntityState.Modified;
+
+        try
+        {
+            await DB.SaveChangesAsync();
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            if (!ReservationExists(Reservation!.Id))
+            {
+                NavigationManager.NavigateTo("notfound");
+            }
+            else
+            {
+                throw;
+            }
+        }
+
+        NavigationManager.NavigateTo("/reservations");
+    }
+
+    bool ReservationExists(int id)
+    {
+        return DB.Reservation.Any(e => e.Id == id);
+    }
+}

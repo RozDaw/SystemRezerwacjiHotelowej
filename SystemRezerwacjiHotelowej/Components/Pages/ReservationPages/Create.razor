@@ -1,0 +1,78 @@
+﻿@page "/reservations/create"
+@inject SystemRezerwacjiHotelowej.Data.ApplicationDbContext DB
+@using SystemRezerwacjiHotelowej.Components
+@inject NavigationManager NavigationManager
+
+<PageTitle>Create</PageTitle>
+
+<h1>Create</h1>
+
+<h4>Reservation</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <EditForm method="post" Model="Reservation" OnValidSubmit="AddReservation" FormName="create" Enhance>
+            <DataAnnotationsValidator />
+            <ValidationSummary class="text-danger" />
+            <div class="mb-3">
+                <label for="datameldunku" class="form-label">DataMeldunku:</label> 
+                <InputDate id="datameldunku" @bind-Value="Reservation.DataMeldunku" class="form-control" /> 
+                <ValidationMessage For="() => Reservation.DataMeldunku" class="text-danger" /> 
+            </div>        
+            <div class="mb-3">
+                <label for="datawymeldowania" class="form-label">DataWymeldowania:</label> 
+                <InputDate id="datawymeldowania" @bind-Value="Reservation.DataWymeldowania" class="form-control" /> 
+                <ValidationMessage For="() => Reservation.DataWymeldowania" class="text-danger" /> 
+            </div>        
+            <div class="mb-3">
+                <label for="czyoplacona" class="form-label">CzyOplacona:</label> 
+                <InputCheckbox id="czyoplacona" @bind-Value="Reservation.CzyOplacona" class="form-check-input" /> 
+                <ValidationMessage For="() => Reservation.CzyOplacona" class="text-danger" /> 
+            </div>        
+            <div class="mb-3">
+                <label for="czyzameldowany" class="form-label">CzyZameldowany:</label> 
+                <InputCheckbox id="czyzameldowany" @bind-Value="Reservation.CzyZameldowany" class="form-check-input" /> 
+                <ValidationMessage For="() => Reservation.CzyZameldowany" class="text-danger" /> 
+            </div>        
+            <div class="mb-3">
+                <label for="parking" class="form-label">Parking:</label> 
+                <InputCheckbox id="parking" @bind-Value="Reservation.Parking" class="form-check-input" /> 
+                <ValidationMessage For="() => Reservation.Parking" class="text-danger" /> 
+            </div>        
+            <div class="mb-3">
+                <label for="animator" class="form-label">Animator:</label> 
+                <InputCheckbox id="animator" @bind-Value="Reservation.Animator" class="form-check-input" /> 
+                <ValidationMessage For="() => Reservation.Animator" class="text-danger" /> 
+            </div>        
+            <div class="mb-3">
+                <label for="liczbaosob" class="form-label">LiczbaOsob:</label> 
+                <InputNumber id="liczbaosob" @bind-Value="Reservation.LiczbaOsob" class="form-control" /> 
+                <ValidationMessage For="() => Reservation.LiczbaOsob" class="text-danger" /> 
+            </div>        
+            <div class="mb-3">
+                <label for="cena" class="form-label">Cena:</label> 
+                <InputNumber id="cena" @bind-Value="Reservation.Cena" class="form-control" /> 
+                <ValidationMessage For="() => Reservation.Cena" class="text-danger" /> 
+            </div>        
+            <button type="submit" class="btn btn-primary">Create</button>
+        </EditForm>
+    </div>
+</div>
+
+<div>
+    <a href="/reservations">Back to List</a>
+</div>
+
+@code {
+
+    [SupplyParameterFromForm]
+    public Reservation Reservation { get; set; } = new();
+
+    // To protect from overposting attacks, see https://aka.ms/RazorPagesCRUD
+    public async Task AddReservation()
+    {
+        DB.Reservation.Add(Reservation);
+        await DB.SaveChangesAsync();
+        NavigationManager.NavigateTo("/reservations");
+    }
+}

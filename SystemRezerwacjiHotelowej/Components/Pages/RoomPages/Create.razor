@@ -1,0 +1,63 @@
+﻿@page "/rooms/create"
+@inject SystemRezerwacjiHotelowej.Data.ApplicationDbContext DB
+@using SystemRezerwacjiHotelowej.Components
+@inject NavigationManager NavigationManager
+
+<PageTitle>Create</PageTitle>
+
+<h1>Create</h1>
+
+<h4>Room</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <EditForm method="post" Model="Room" OnValidSubmit="AddRoom" FormName="create" Enhance>
+            <DataAnnotationsValidator />
+            <ValidationSummary class="text-danger" />
+            <div class="mb-3">
+                <label for="numer" class="form-label">Numer:</label> 
+                <InputNumber id="numer" @bind-Value="Room.Numer" class="form-control" /> 
+                <ValidationMessage For="() => Room.Numer" class="text-danger" /> 
+            </div>        
+            <div class="mb-3">
+                <label for="pietro" class="form-label">Pietro:</label> 
+                <InputNumber id="pietro" @bind-Value="Room.Pietro" class="form-control" /> 
+                <ValidationMessage For="() => Room.Pietro" class="text-danger" /> 
+            </div>        
+            <div class="mb-3">
+                <label for="iloscosob" class="form-label">IloscOsob:</label> 
+                <InputNumber id="iloscosob" @bind-Value="Room.IloscOsob" class="form-control" /> 
+                <ValidationMessage For="() => Room.IloscOsob" class="text-danger" /> 
+            </div>        
+            <div class="mb-3">
+                <label for="cenazadobe" class="form-label">CenaZaDobe:</label> 
+                <InputNumber id="cenazadobe" @bind-Value="Room.CenaZaDobe" class="form-control" /> 
+                <ValidationMessage For="() => Room.CenaZaDobe" class="text-danger" /> 
+            </div>        
+            <div class="mb-3">
+                <label for="standard" class="form-label">Standard:</label> 
+                <InputText id="standard" @bind-Value="Room.Standard" class="form-control" /> 
+                <ValidationMessage For="() => Room.Standard" class="text-danger" /> 
+            </div>        
+            <button type="submit" class="btn btn-primary">Create</button>
+        </EditForm>
+    </div>
+</div>
+
+<div>
+    <a href="/rooms">Back to List</a>
+</div>
+
+@code {
+
+    [SupplyParameterFromForm]
+    public Room Room { get; set; } = new();
+
+    // To protect from overposting attacks, see https://aka.ms/RazorPagesCRUD
+    public async Task AddRoom()
+    {
+        DB.Room.Add(Room);
+        await DB.SaveChangesAsync();
+        NavigationManager.NavigateTo("/rooms");
+    }
+}

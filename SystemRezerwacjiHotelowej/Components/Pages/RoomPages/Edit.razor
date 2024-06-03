@@ -1,0 +1,106 @@
+﻿@page "/Rooms/edit"
+@inject SystemRezerwacjiHotelowej.Data.ApplicationDbContext DB
+@using SystemRezerwacjiHotelowej.Components
+@inject NavigationManager NavigationManager
+@using Microsoft.EntityFrameworkCore
+
+<PageTitle>Edit</PageTitle>
+
+<h1>Edit</h1>
+
+<h4>Room</h4>
+<hr />
+@if (Room is null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <div class="row">
+        <div class="col-md-4">
+            <EditForm method="post" Model="Room" OnValidSubmit="UpdateRoom" FormName="edit" Enhance>
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+                <input type="hidden" name="Room.Id" value="@Room.Id" />
+                <div class="mb-3">
+                    <label for="numer" class="form-label">Numer:</label>
+                    <InputNumber id="numer" @bind-Value="Room.Numer" class="form-control" />
+                    <ValidationMessage For="() => Room.Numer" class="text-danger" />
+                </div>
+                <div class="mb-3">
+                    <label for="pietro" class="form-label">Pietro:</label>
+                    <InputNumber id="pietro" @bind-Value="Room.Pietro" class="form-control" />
+                    <ValidationMessage For="() => Room.Pietro" class="text-danger" />
+                </div>
+                <div class="mb-3">
+                    <label for="iloscosob" class="form-label">IloscOsob:</label>
+                    <InputNumber id="iloscosob" @bind-Value="Room.IloscOsob" class="form-control" />
+                    <ValidationMessage For="() => Room.IloscOsob" class="text-danger" />
+                </div>
+                <div class="mb-3">
+                    <label for="cenazadobe" class="form-label">CenaZaDobe:</label>
+                    <InputNumber id="cenazadobe" @bind-Value="Room.CenaZaDobe" class="form-control" />
+                    <ValidationMessage For="() => Room.CenaZaDobe" class="text-danger" />
+                </div>
+                <div class="mb-3">
+                    <label for="standard" class="form-label">Standard:</label>
+                    <InputText id="standard" @bind-Value="Room.Standard" class="form-control" />
+                    <ValidationMessage For="() => Room.Standard" class="text-danger" />
+                </div>
+                <button type="submit" class="btn btn-primary">Save</button>
+            </EditForm>
+        </div>
+    </div>
+}
+
+<div>
+    <a href="/rooms">Back to List</a>
+</div>
+
+@code {
+    [SupplyParameterFromQuery]
+    public int Id { get; set; }
+
+    [SupplyParameterFromForm]
+    public Room? Room { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        Room ??= await DB.Room.FirstOrDefaultAsync(m => m.Id == Id);
+
+        if (Room is null)
+        {
+            NavigationManager.NavigateTo("notfound");
+        }
+    }
+
+    // To protect from overposting attacks, enable the specific properties you want to bind to.
+    // For more details, see https://aka.ms/RazorPagesCRUD.
+    public async Task UpdateRoom()
+    {
+        DB.Attach(Room!).State = EntityState.Modified;
+
+        try
+        {
+            await DB.SaveChangesAsync();
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            if (!RoomExists(Room!.Id))
+            {
+                NavigationManager.NavigateTo("notfound");
+            }
+            else
+            {
+                throw;
+            }
+        }
+
+        NavigationManager.NavigateTo("/rooms");
+    }
+
+    bool RoomExists(int id)
+    {
+        return DB.Room.Any(e => e.Id == id);
+    }
+}
